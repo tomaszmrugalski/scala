@@ -8,7 +8,7 @@ Autorzy:
 ## Uruchomienie projektu na Apache Spark:
 
 1. przejdź do katalogu z plikiem project2.scala, np. `cd devel/scala`
-1. uruchom apache-spark
+1. uruchom apache-spark: `spark-shell`
 1. wpisz `:load project2.scala`
 
 ## Uruchomienie projektu na Zeppelinie:
