@@ -92,6 +92,17 @@ printStats("len", len.map(_._2.toFloat))
 printStats("sum", sum.map(_._2))
 
 // ZADANIE 4: Znalezc unikatowe elementy we wszystkich RDD
+printf("--- unique values ---\n")
 
+// Unikatowe elementy w names, len i sum
+var uniq_names = sc.parallelize(names).distinct()
+var uniq_len = sc.parallelize(len).distinct()
+var uniq_sum = sc.parallelize(sum).distinct()
+
+// Wartosci mozna sprawdzic za pomoca collect
+
+uniq_names.collect
+uniq_len.collect
+uniq_sum.collect
 
 // ZADANIE 5: zapisac wszystkie RDD na dysk
