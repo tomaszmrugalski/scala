@@ -20,6 +20,7 @@
 // 4. histogramy dla wszystkich RDD
 
 import scala.util.Random
+import java.io._
 
 println("# HPC projekt 2, autorzy: Tomasz Mrugalski, Dawid Czubak")
 
@@ -41,7 +42,9 @@ val names = for (i <- 0 to 63) yield allowedValues(random.nextInt(allowedValues.
 // To zwrociloby same dlugosci: var lengths = names.map(x => x.length)
 
 // lengths to lista par. Kazda para sklada sie ze stringa z imieniem i jego dlugoscia, np. (Dawid, 5)
-val len = names.map(x => (x,x.length))
+val len_sequence = names.map(x => (x,x.length))
+
+var len = sc.parallelize(len_sequence)
 
 // Takie cos oblicza iloczyn znakow w stringu. Jest tu pare problemow.
 // Zwykly int zapisywany jest na 4 bajtach. Zatem kazdy string o dlugosci wiekszej niz 4 znaki ma potencjal do tego,
@@ -50,7 +53,9 @@ val len = names.map(x => (x,x.length))
 // "Tomek".map(_.toByte) - wektor bajtow: Vector(84, 111, 109, 101, 107)
 // "Tomek".map(_.toByte.toFloat) - wektor floatow: Vector(84.0, 111.0, 109.0, 101.0, 107.0)
 // "Tomek".map(_.toByte.toFloat).reduce(_ * _) - redukcja, ktora bierze poprzedni element (pierwsze _) i mnozy razy kolejny  (drugie _)
-var sum = names.map(x => (x,x.map(_.toByte.toFloat).reduce(_ * _)))
+var sum_sequence = names.map(x => (x,x.map(_.toByte.toFloat).reduce(_ * _)))
+
+var sum = sc.parallelize(sum_sequence)
 
 // ZADANIE 3: Obliczyc statystyki
 // Probowalem zdefiniowac metode wypisujaca statystyki, ale names, len i sum maja zupelnie inne typy
@@ -59,8 +64,8 @@ var sum = names.map(x => (x,x.map(_.toByte.toFloat).reduce(_ * _)))
 // Przyjmuje ona 2 parametry: nazwe RDD (zeby napisac, czego dotycza statystyki) oraz wartosci rdd
 // len ma wartosci int, natomiast sum ma float. Dlatego tutaj bedziemy operowac na floatach.
 
-def printStats(name: String, rdd: IndexedSeq[Float]) : Unit = {
-    val count = rdd.length
+def printStats(name: String, rdd: org.apache.spark.rdd.RDD[(Float)]) : Unit = {
+    val count = rdd.count
     val mean = rdd.sum * 1.0 / count
     val devs = rdd.map(score => (score - mean) * (score - mean))
     val stddev = Math.sqrt(devs.sum / (count - 1))
@@ -68,8 +73,8 @@ def printStats(name: String, rdd: IndexedSeq[Float]) : Unit = {
    // zamiast rdd.reduce(_ min _) mozna uzyc zapisu skrotowego: rdd.min
 
     printf("--- %s stats ---\n", name)
-    printf("Length    = %d\n", rdd.length)
-    printf("average   = %f\n", rdd.reduce(_ + _) * 1.0 / len.length)
+    printf("Length    = %d\n", rdd.count)
+    printf("average   = %f\n", rdd.reduce(_ + _) * 1.0 / rdd.count)
     printf("min value = %f\n", rdd.reduce(_ min _))
     printf("max value = %f\n", rdd.reduce(_ max _))
     printf("std dev   = %f\n", stddev)
@@ -95,14 +100,16 @@ printStats("sum", sum.map(_._2))
 printf("--- unique values ---\n")
 
 // Unikatowe elementy w names, len i sum
-var uniq_names = sc.parallelize(names).distinct()
-var uniq_len = sc.parallelize(len).distinct()
-var uniq_sum = sc.parallelize(sum).distinct()
+printf("Unique names  =")
+sc.parallelize(names).distinct().collect
 
-// Wartosci mozna sprawdzic za pomoca collect
 
-uniq_names.collect
-uniq_len.collect
-uniq_sum.collect
+printf("Unique len    =")
+len.distinct().collect
+
+printf("Unique sum    =")
+sum.distinct().collect
+
 
 // ZADANIE 5: zapisac wszystkie RDD na dysk
+
