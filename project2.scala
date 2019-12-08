@@ -78,6 +78,9 @@ def printStats(name: String, rdd: org.apache.spark.rdd.RDD[(Float)]) : Unit = {
     printf("min value = %f\n", rdd.reduce(_ min _))
     printf("max value = %f\n", rdd.reduce(_ max _))
     printf("std dev   = %f\n", stddev)
+    printf("variance  = %f\n", stddev*stddev)
+
+   // @TODO: policzyc histogram
 }
 
 // Tu jest niezly cyrk. len.map(_._2) zwroci liste samych dlugosci. .reduce(_ + _) doda wszystkie
