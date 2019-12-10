@@ -83,7 +83,10 @@ def printStats(name: String, rdd: org.apache.spark.rdd.RDD[(Float)]) : Unit = {
     printf("variance  = %f\n", stddev*stddev)
 
    // @TODO: policzyc histogram
+    printf("histogram = \n")
+    val his = rdd.histogram(10)
 
+    for (i <- 0 to 9) printf("%f: %d\n", his._1(i), his._2(i))
 }
 
 // Tu jest niezly cyrk. len.map(_._2) zwroci liste samych dlugosci. .reduce(_ + _) doda wszystkie
