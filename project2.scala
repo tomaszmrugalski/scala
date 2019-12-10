@@ -45,7 +45,9 @@ val names = for (i <- 0 to 63) yield allowedValues(random.nextInt(allowedValues.
 val len_sequence = names.map(x => (x,x.length))
 
 var len = sc.parallelize(len_sequence)
-
+// Zmienne potrzebne do wykonania zapisu do pliku zmiennej "names".
+val names_out_sequence  = names.map(x => (x))
+var names_out = sc.parallelize(names_out_sequence)
 // Takie cos oblicza iloczyn znakow w stringu. Jest tu pare problemow.
 // Zwykly int zapisywany jest na 4 bajtach. Zatem kazdy string o dlugosci wiekszej niz 4 znaki ma potencjal do tego,
 // zeby przekrecic zakres inta. Dlatego lepiej operacje wykonac na double'u.
@@ -81,6 +83,7 @@ def printStats(name: String, rdd: org.apache.spark.rdd.RDD[(Float)]) : Unit = {
     printf("variance  = %f\n", stddev*stddev)
 
    // @TODO: policzyc histogram
+
 }
 
 // Tu jest niezly cyrk. len.map(_._2) zwroci liste samych dlugosci. .reduce(_ + _) doda wszystkie
@@ -115,4 +118,7 @@ sum.distinct().collect
 
 
 // ZADANIE 5: zapisac wszystkie RDD na dysk
-
+// Zapis wszystkich RDD do folderu w którym znajduje siê spark.
+len.saveAsTextFile("len_save")
+sum.saveAsTextFile("sum_save")
+names_out.saveAsTextFile("names_save")
