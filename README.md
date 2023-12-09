@@ -1,3 +1,5 @@
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 # HPC - projekt 2
 Projekt na zaliczenie przedmiotu Kosmiczne Zastosowania Zaawansowanych Technologii Informatycznych
 
